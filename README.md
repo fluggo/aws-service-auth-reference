@@ -2,4 +2,14 @@
 
 This is a JSON-formatted scrape of the [AWS Service Authorization Reference](https://docs.aws.amazon.com/service-authorization/latest/reference/reference.html), along with a Golang program to update it.
 
-My next plan is to publish an NPM package with the data.
+## NPM package
+
+If you're using the NPM package, you can use the service reference like this:
+
+```typescript
+import { serviceAuth } from '@fluggo/aws-service-auth-reference';
+
+for(const service of serviceAuth) {
+  console.log(service.name);
+}
+```

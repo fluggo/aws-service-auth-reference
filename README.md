@@ -78,7 +78,9 @@ The JSON file contains an array of service reference objects like this:
     // ...
   ],
 
-  // Types of resources that this service provides.
+  // Types of resources that can be specified for this service in IAM resource statements.
+  //
+  // These resources can come from other services; check the ARN to see the service type.
   "resourceTypes": [
     {
       // Name of the resource type.

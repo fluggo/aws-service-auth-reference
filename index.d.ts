@@ -30,6 +30,8 @@ export interface ServiceAuthorizationReference {
 
   /**
    * Types of resources that can be specified for this service in IAM resource statements.
+   * 
+   * These resources can come from other services; check the ARN to see the service type.
    */
   resourceTypes: ResourceType[];
 

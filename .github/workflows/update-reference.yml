@@ -1,5 +1,7 @@
 name: update-reference
-on: [workflow_dispatch]
+on:
+  schedule:
+    - cron: '0 0 * * 0'
 jobs:
   update-reference:
     runs-on: ubuntu-latest

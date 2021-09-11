@@ -1,6 +1,6 @@
 # AWS service authorization reference
 
-This is a JSON-formatted scrape of the [AWS Service Authorization Reference](https://docs.aws.amazon.com/service-authorization/latest/reference/reference.html), along with a Golang program to update it.
+This is a JSON-formatted scrape of the [AWS Service Authorization Reference](https://docs.aws.amazon.com/service-authorization/latest/reference/reference.html), along with a Golang program to update it. The package is updated weekly.
 
 ## NPM package
 

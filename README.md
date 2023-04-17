@@ -120,3 +120,38 @@ The JSON file contains an array of service reference objects like this:
   ]
 }
 ```
+
+## Using with curl and jq
+
+You can use [curl](https://curl.se/) and [jq](https://stedolan.github.io/jq/) in shell scripts to parse the service auth JSON file and query it. For example, to find all IAM actions ending in "Role":
+
+```bash
+curl --silent --show-error \
+  --url 'https://raw.githubusercontent.com/fluggo/aws-service-auth-reference/master/service-auth.json' \
+  > /tmp/auth.json
+
+cat /tmp/auth.json | jq --raw-output '
+  .[]
+  | {service: .servicePrefix} + (.actions[] | {action: .name})
+  | select(.service == "iam" and (.action | match("Role$")))
+  | "\(.service):\(.action)"
+'
+```
+
+Output:
+
+```text
+iam:CreateRole
+iam:CreateServiceLinkedRole
+iam:DeleteRole
+iam:DeleteServiceLinkedRole
+iam:GetRole
+iam:ListInstanceProfilesForRole
+iam:PassRole
+iam:TagRole
+iam:UntagRole
+iam:UpdateRole
+```
+
+Example provided by @iainelder.
+

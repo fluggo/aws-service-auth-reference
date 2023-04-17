@@ -114,7 +114,7 @@ func parseTopics() ([]topic, error) {
 	// Additionally, it implements all the tree-structural pseudo-classes found here:
 	//	https://developer.mozilla.org/en-US/docs/Web/CSS/Pseudo-classes#tree-structural_pseudo-classes
 
-	topicsListSelector := mustParseSelector(`p:haschild(strong:matchesOwn(^\s*Topics\s*$)) + ul`)
+	topicsListSelector := mustParseSelector(`h6:matchesOwn(^\s*Topics\s*$) + ul`)
 	topicsListNode := cascadia.Query(node, topicsListSelector)
 
 	if topicsListNode == nil {

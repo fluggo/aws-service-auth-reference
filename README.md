@@ -73,7 +73,10 @@ The JSON file contains an array of service reference objects like this:
           // Additional permissions you must have in order to use the action.
           "dependentActions": []
         }
-      ]
+      ],
+
+      // Condition keys that can be specified for this action that do not depend on a resource type.
+      "conditionKeys": []
     },
     // ...
   ],

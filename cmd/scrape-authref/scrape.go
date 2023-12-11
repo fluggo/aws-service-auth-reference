@@ -24,8 +24,8 @@ var (
 	spaceReplacer = regexp.MustCompile(`\s{2,}`)
 )
 
-func mustParseSelector(sel string) cascadia.Sel {
-	result, err := cascadia.Parse(sel)
+func mustParseSelector(sel string) cascadia.SelectorGroup {
+	result, err := cascadia.ParseGroup(sel)
 
 	if err != nil {
 		panic(err)
@@ -175,6 +175,7 @@ type Action struct {
 	Description    string               `json:"description"`
 	AccessLevel    string               `json:"accessLevel"`
 	ResourceTypes  []ActionResourceType `json:"resourceTypes"`
+	ConditionKeys  []string             `json:"conditionKeys"`
 }
 
 func parseAPIReferenceHref(page *html.Node) string {
@@ -245,6 +246,7 @@ func parseActionsTable(page *html.Node) ([]*Action, error) {
 			}
 
 			action.ResourceTypes = make([]ActionResourceType, 0)
+			action.ConditionKeys = make([]string, 0)
 		}
 
 		if row == nextDescriptionRow {
@@ -271,18 +273,22 @@ func parseActionsTable(page *html.Node) ([]*Action, error) {
 			action.AccessLevel = gatherText(accessLevelNode, true)
 		}
 
-		resourceType := ActionResourceType{}
+		conditionKeyNodes := cascadia.QueryAll(rowCellNodes[len(rowCellNodes)-2], pSelector)
+		conditionKeys := make([]string, len(conditionKeyNodes))
+		for k, conditionKeyNode := range conditionKeyNodes {
+			conditionKeys[k] = gatherText(conditionKeyNode, true)
+		}
 
 		resourceTypeField := gatherText(rowCellNodes[len(rowCellNodes)-3], true)
+		if resourceTypeField == "" {
+			action.ConditionKeys = conditionKeys
+			continue
+		}
+
+		resourceType := ActionResourceType{}
 		resourceType.ResourceType = strings.TrimSuffix(resourceTypeField, "*")
 		resourceType.Required = strings.HasSuffix(resourceTypeField, "*")
-
-		conditionKeyNodes := cascadia.QueryAll(rowCellNodes[len(rowCellNodes)-2], pSelector)
-		resourceType.ConditionKeys = make([]string, len(conditionKeyNodes))
-
-		for k, conditionKeyNode := range conditionKeyNodes {
-			resourceType.ConditionKeys[k] = gatherText(conditionKeyNode, true)
-		}
+		resourceType.ConditionKeys = conditionKeys
 
 		dependentActionNodes := cascadia.QueryAll(rowCellNodes[len(rowCellNodes)-1], pSelector)
 		resourceType.DependentActions = make([]string, len(dependentActionNodes))
@@ -291,9 +297,7 @@ func parseActionsTable(page *html.Node) ([]*Action, error) {
 			resourceType.DependentActions[k] = gatherText(dependentActionNode, true)
 		}
 
-		if resourceType.ResourceType != "" {
-			action.ResourceTypes = append(action.ResourceTypes, resourceType)
-		}
+		action.ResourceTypes = append(action.ResourceTypes, resourceType)
 	}
 
 	return actions, nil
@@ -307,7 +311,7 @@ type ResourceType struct {
 }
 
 func parseResourceTypesTable(page *html.Node) []*ResourceType {
-	rtTableSelector := mustParseSelector(`h2:containsOwn("Resource types defined by") + p + div[class*="table-container"] table`)
+	rtTableSelector := mustParseSelector(`h2:containsOwn("Resource types defined by") + p + div[class*="table-container"] table, h2:containsOwn("Resource types defined by") + p + div + div[class*="table-container"] table`)
 	rtTableNode := cascadia.Query(page, rtTableSelector)
 
 	if rtTableNode == nil {

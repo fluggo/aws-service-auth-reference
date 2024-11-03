@@ -1,6 +1,6 @@
 {
   "name": "@fluggo/aws-service-auth-reference",
-  "version": "1.0.161",
+  "version": "1.0.162",
   "description": "A JSON reference for AWS service authorization (IAM actions)",
   "main": "index.js",
   "types": "index.d.ts",
